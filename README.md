@@ -1,2 +1,2 @@
-https://hackweek.opensuse.org/21/projects/air-quality-monitor
+https://hackweek.opensuse.org/21/projects/indoor-air-quality-sensor
 
