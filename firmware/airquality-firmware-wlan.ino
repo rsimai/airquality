@@ -13,8 +13,8 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
-const char *ssid = "YOURSSID";
-const char *password = "YOURPASSWORD";
+const char *ssid = "";
+const char *password = "";
 
 WebServer server(80);
 
@@ -108,7 +108,6 @@ void setup()
   }
 
   server.on("/", handleRoot);
-  server.on("/test.svg", drawGraph);
   server.on("/inline", []() {
     server.send(200, "text/plain", "this works as well");
   });
@@ -122,16 +121,22 @@ void setup()
 
 void handleRoot() {
   digitalWrite(led, 1);
-  char temptext[700];
+  int seconds = millis() / 1000;
+  int minutes = seconds / 60;
+  int hours = minutes / 60;
+  int days = hours / 24;
   
-  snprintf(temptext, 700,
+  char temptext[800];
   
-          "<html>\
-            <head>\
-    <meta http-equiv='refresh' content='5' charset='UTF-8'/>\
-    <title>Env Sensor</title>\
-  </head>\
-  <body>\
+  snprintf(temptext, 800,
+  
+  "<html>\
+    <head>\
+     <meta http-equiv='refresh' content='5' charset='UTF-8'/>\
+     <title>Env Sensor</title>\
+    </head>\
+   <body>\
+    <p>\
     <h1>Hello from Robert\'s ESP32!</h1>\
     <table border=1>\
     <tr><th>Parameter</th><th>Value</th><th>Unit</th></tr>\
@@ -139,15 +144,19 @@ void handleRoot() {
     <tr><td>Temperature</td><td>%.1f</td><td>°C</td></tr>\
     <tr><td>Pressure</td><td>%.1f</td><td>hPa</td></tr>\
     <tr><td>Humidity</td><td>%.1f</td><td>&percnt;Rel</td></tr>\
-    <tr><td>Quality</td><td>%.1f</td><td>(none)</td></tr>\
+    <tr><td>Quality</td><td>%.1f</td><td>k&Omega;</td></tr>\
     </table>\
-    <br>\
+    </p>\
+    <p>\
+    uptime (D:H:M:S): %02d:%02d:%02d:%02d\
+    </p>\
+    <p>\
     <a href=\"https://github.com/rsimai/airquality\">project repo</a>\
-   \
+    </p>\
   </body>\
    </html>",
 
-           co2, temp, press, humid, gas
+           co2, temp, press, humid, gas, days, hours % 24, minutes % 60, seconds % 60
           );
 
   server.send(200, "text/html", temptext);
@@ -260,12 +269,13 @@ void service() {
   f2();
   u8x8.drawUTF8(0,0, "Service");
   f1();
-  u8x8.drawUTF8(0,2, "Not yet");
-  u8x8.drawUTF8(0,3, "implemented");
-  u8x8.drawUTF8(0,5, "firmware");
-  u8x8.setCursor(0,6);
+  u8x8.drawUTF8(0,3, "IP");
+  u8x8.setCursor(0,4);
+  u8x8.print(WiFi.localIP());
+  u8x8.drawUTF8(0,6, "firmware");
+  u8x8.setCursor(0,7);
   u8x8.print(firmware);
-  delay(3000);
+  delay(5000);
   prepdisplay();
 }
 
@@ -283,7 +293,7 @@ void checkkey() {
       
     }
     if ( keyduration1 > ( 100 * longkey )) {
-      Serial.println("key1 long press, not implemented");
+      //Serial.println("key1 long press, not implemented");
       service();
       
       lastkey1 = 0;
@@ -304,7 +314,7 @@ void checkkey() {
   if ( key2 == true) {
     keyduration2++;
     if ( keyduration2 > ( 100 * longkey )) {
-      Serial.println("key2 long press, not implemented");
+      Serial.println("key2 long press not implemented");
       lastkey2 = 0;
       key2 = 0;
     }
@@ -314,7 +324,7 @@ void checkkey() {
   }
   if (key2 != lastkey2) {    //key change?
     if ( key2 > lastkey2 ) { //toggle only when key down
-      Serial.println("key1 not implemented");
+      Serial.println("key2 not implemented");
     }
     lastkey2 = key2;
   }
