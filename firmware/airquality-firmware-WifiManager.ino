@@ -23,7 +23,7 @@ Adafruit_BME680 bme;                                       // I2C 21 SDA, 22 SCL
 #define TX_PIN 19                                          // Tx pin which the MHZ19 Rx pin is attached to
 #define BAUDRATE 9600                                      // Device to MH-Z19 Serial baudrate (should not be changed)
 
-String firmware = "2022-06-28.1";
+String firmware = "2022-06-29.1";
 String WifiAP = "R-ESP";
 
 #define keypin1 34 // button 1
